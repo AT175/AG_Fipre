@@ -28,13 +28,24 @@ import { RolesGuard } from './auth/roles.guard';
       useFactory: (config: ConfigService) => {
         const isDev =
           config.get<string>('NODE_ENV', 'development') !== 'production';
+        const databaseUrl = config.get<string>('DATABASE_URL');
+        if (databaseUrl) {
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            autoLoadEntities: true,
+            synchronize: true,
+            logging: isDev,
+            ssl: isDev ? false : { rejectUnauthorized: false },
+          };
+        }
         return {
           type: 'postgres',
-          host: config.getOrThrow<string>('DB_HOST'),
-          port: config.getOrThrow<number>('DB_PORT'),
-          username: config.getOrThrow<string>('DB_USERNAME'),
-          password: config.getOrThrow<string>('DB_PASSWORD'),
-          database: config.getOrThrow<string>('DB_DATABASE'),
+          host: config.get<string>('DB_HOST', 'localhost'),
+          port: config.get<number>('DB_PORT', 5432),
+          username: config.get<string>('DB_USERNAME', 'postgres'),
+          password: config.get<string>('DB_PASSWORD', 'postgres'),
+          database: config.get<string>('DB_DATABASE', 'paradise_ag'),
           autoLoadEntities: true,
           synchronize: true,
           logging: isDev,
