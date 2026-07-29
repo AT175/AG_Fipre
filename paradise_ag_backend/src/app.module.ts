@@ -36,8 +36,9 @@ import { RolesGuard } from './auth/roles.guard';
           password: config.getOrThrow<string>('DB_PASSWORD'),
           database: config.getOrThrow<string>('DB_DATABASE'),
           autoLoadEntities: true,
-          synchronize: isDev,
+          synchronize: true,
           logging: isDev,
+          ssl: isDev ? false : { rejectUnauthorized: false },
         };
       },
     }),
