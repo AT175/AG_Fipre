@@ -25,6 +25,10 @@ export class TenantsService {
       ...dto,
       subscriptionTier: dto.subscriptionTier ?? 'basic',
       primaryColor: dto.primaryColor ?? '#2E7D32',
+      secondaryColor: dto.secondaryColor ?? '#FFD600',
+      maxMembers: dto.maxMembers ?? 500,
+      maxBranches: dto.maxBranches ?? 5,
+      enabledModules: dto.enabledModules ?? ['members', 'attendance', 'finance', 'sermons', 'events', 'welfare'],
       isActive: true,
     });
     return this.tenantRepo.save(tenant);
@@ -66,5 +70,55 @@ export class TenantsService {
     const tenant = await this.findById(id);
     tenant.isActive = false;
     await this.tenantRepo.save(tenant);
+  }
+
+  async findAllPublicBranding() {
+    const tenants = await this.tenantRepo.find({
+      where: { isActive: true },
+      order: { name: 'ASC' },
+    });
+    return tenants.map((t) => ({
+      slug: t.slug,
+      name: t.name,
+      appName: t.appName,
+      primaryColor: t.primaryColor || '#2E7D32',
+      secondaryColor: t.secondaryColor || '#FFD600',
+      logoUrl: t.logoUrl,
+      bannerUrl: t.bannerUrl,
+      motto: t.motto,
+      address: t.address,
+      phone: t.phone,
+      email: t.email,
+    }));
+  }
+
+  async findPublicBranding(slug: string) {
+    const tenant = await this.tenantRepo.findOneBy({ slug, isActive: true });
+    if (!tenant) {
+      throw new NotFoundException('Church not found');
+    }
+    return {
+      slug: tenant.slug,
+      name: tenant.name,
+      appName: tenant.appName,
+      primaryColor: tenant.primaryColor || '#2E7D32',
+      secondaryColor: tenant.secondaryColor || '#FFD600',
+      logoUrl: tenant.logoUrl,
+      bannerUrl: tenant.bannerUrl,
+      motto: tenant.motto,
+      address: tenant.address,
+      phone: tenant.phone,
+      email: tenant.email,
+      aboutText: tenant.aboutText,
+      mission: tenant.mission,
+      vision: tenant.vision,
+      pastorMessage: tenant.pastorMessage,
+      facebookUrl: tenant.facebookUrl,
+      instagramUrl: tenant.instagramUrl,
+      twitterUrl: tenant.twitterUrl,
+      enabledModules: tenant.enabledModules,
+      maxMembers: tenant.maxMembers,
+      maxBranches: tenant.maxBranches,
+    };
   }
 }

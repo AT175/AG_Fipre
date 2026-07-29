@@ -33,6 +33,16 @@ export class TenantsController {
     return this.tenantsService.findAll();
   }
 
+  @Get('public/all')
+  findAllPublic() {
+    return this.tenantsService.findAllPublicBranding();
+  }
+
+  @Get('public/:slug')
+  findPublicBySlug(@Param('slug') slug: string) {
+    return this.tenantsService.findPublicBranding(slug);
+  }
+
   @Get(':slug')
   findBySlug(@Param('slug') slug: string) {
     return this.tenantsService.findBySlug(slug);
@@ -40,14 +50,14 @@ export class TenantsController {
 
   @Get('by-id/:id')
   @UseGuards(JwtAuthGuard)
-  @Roles('super_system_admin')
+  @Roles('super_system_admin', 'church_admin')
   findById(@Param('id', ParseUUIDPipe) id: string) {
     return this.tenantsService.findById(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @Roles('super_system_admin')
+  @Roles('super_system_admin', 'church_admin')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTenantDto,
