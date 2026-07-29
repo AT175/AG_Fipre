@@ -40,7 +40,7 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGIN
-        sync: false
+        value: https://paradise-ag.netlify.app
       - key: SUPABASE_URL
         value: https://dbmbkevspcozcnhcsyii.supabase.co
       - key: SUPABASE_ANON_KEY
