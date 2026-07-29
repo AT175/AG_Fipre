@@ -1,0 +1,31 @@
+# Dependencies
+paradise_ag_backend/node_modules/
+paradise_ag_backend/dist/
+
+# Flutter
+paradise_ag/build/
+paradise_ag/.dart_tool/
+
+# Environment files
+.env
+.env.production
+paradise_ag/.env
+paradise_ag_backend/.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+paradise_ag/analyze.log
+paradise_ag/analyze_done.txt
+paradise_ag/flutter_01.log
+
+# Certs
+paradise_ag/certs/
