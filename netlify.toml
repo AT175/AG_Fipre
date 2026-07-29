@@ -1,4 +1,5 @@
 [build]
+  base = "paradise_ag"
   command = """
     git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter &&
     export PATH="/opt/flutter/bin:$PATH" &&
