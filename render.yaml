@@ -29,7 +29,7 @@ services:
           name: paradise-ag-db
           property: database
       - key: JWT_SECRET
-        sync: false
+        value: "89d056a20e32a303b0276ae7e2c6358ab9464fb7c330a69a40cdae586e90d06d617105406e7542f8b610e564beeef651d8d07828c25fe98b518af3c53bc78951"
       - key: JWT_EXPIRES_IN
         value: 15m
       - key: JWT_REFRESH_EXPIRES_IN
