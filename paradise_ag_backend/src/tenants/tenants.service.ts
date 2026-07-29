@@ -78,6 +78,7 @@ export class TenantsService {
       order: { name: 'ASC' },
     });
     return tenants.map((t) => ({
+      id: t.id,
       slug: t.slug,
       name: t.name,
       appName: t.appName,
@@ -89,6 +90,7 @@ export class TenantsService {
       address: t.address,
       phone: t.phone,
       email: t.email,
+      subscriptionTier: t.subscriptionTier,
     }));
   }
 
@@ -98,6 +100,7 @@ export class TenantsService {
       throw new NotFoundException('Church not found');
     }
     return {
+      id: tenant.id,
       slug: tenant.slug,
       name: tenant.name,
       appName: tenant.appName,
