@@ -41,6 +41,10 @@ services:
         value: 7d
       - key: CORS_ORIGIN
         sync: false
+      - key: SUPABASE_URL
+        value: https://dbmbkevspcozcnhcsyii.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWJrZXZzcGNvemNuaGNzeWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODczNTUsImV4cCI6MjA5OTM2MzM1NX0.7W2hZ0QIBYdpZ4tYh_wl7M3SpP9NzD7QWO90QHk5FDo
 
 databases:
   - name: paradise-ag-db
