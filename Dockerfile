@@ -16,6 +16,7 @@ ENV JWT_REFRESH_EXPIRES_IN=7d
 ENV CORS_ORIGIN=https://paradise-ag.netlify.app
 ENV SUPABASE_URL=https://dbmbkevspcozcnhcsyii.supabase.co
 ENV SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWJrZXZzcGNvemNuaGNzeWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODczNTUsImV4cCI6MjA5OTM2MzM1NX0.7W2hZ0QIBYdpZ4tYh_wl7M3SpP9NzD7QWO90QHk5FDo
+ENV DATABASE_URL=postgresql://postgres:Ag%402026_2027@db.dbmbkevspcozcnhcsyii.supabase.co:5432/postgres
 
 EXPOSE 3000
 
