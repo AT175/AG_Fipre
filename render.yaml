@@ -2,12 +2,9 @@ services:
   - type: web
     name: paradise-ag-api
     runtime: node
-    region: oregon
     plan: free
-    rootDirectory: paradise_ag_backend
-    buildCommand: npm ci && npm run build
-    startCommand: npm run start:prod
-    healthCheckPath: /api
+    buildCommand: cd paradise_ag_backend && npm ci && npm run build
+    startCommand: cd paradise_ag_backend && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -40,15 +37,13 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGIN
-        value: https://paradise-ag.netlify.app
+        value: "https://paradise-ag.netlify.app"
       - key: SUPABASE_URL
-        value: https://dbmbkevspcozcnhcsyii.supabase.co
+        value: "https://dbmbkevspcozcnhcsyii.supabase.co"
       - key: SUPABASE_ANON_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWJrZXZzcGNvemNuaGNzeWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODczNTUsImV4cCI6MjA5OTM2MzM1NX0.7W2hZ0QIBYdpZ4tYh_wl7M3SpP9NzD7QWO90QHk5FDo
+        value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWJrZXZzcGNvemNuaGNzeWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODczNTUsImV4cCI6MjA5OTM2MzM1NX0.7W2hZ0QIBYdpZ4tYh_wl7M3SpP9NzD7QWO90QHk5FDo"
 
 databases:
   - name: paradise-ag-db
-    region: oregon
-    plan: free
     databaseName: paradise_ag
     ipAllowList: []
