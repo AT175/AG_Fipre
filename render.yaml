@@ -1,10 +1,8 @@
 services:
   - type: web
     name: paradise-ag-api
-    runtime: node
+    runtime: docker
     plan: free
-    buildCommand: cd paradise_ag_backend && npm ci && npm run build
-    startCommand: cd paradise_ag_backend && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
