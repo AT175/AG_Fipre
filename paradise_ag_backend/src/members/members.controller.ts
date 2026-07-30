@@ -6,19 +6,16 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { AuthenticatedUser } from '../auth/jwt.strategy';
 
 @Controller('tenants/:tenantId/members')
-@UseGuards(JwtAuthGuard)
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 

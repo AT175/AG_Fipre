@@ -6,39 +6,38 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
+import { Public } from '../auth/public.decorator';
 
 @Controller('tenants')
 export class TenantsController {
   constructor(private readonly tenantsService: TenantsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @Roles('super_system_admin')
   create(@Body() dto: CreateTenantDto) {
     return this.tenantsService.create(dto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @Roles('super_system_admin')
   findAll() {
     return this.tenantsService.findAll();
   }
 
   @Get('public/all')
+  @Public()
   findAllPublic() {
     return this.tenantsService.findAllPublicBranding();
   }
 
   @Get('public/:slug')
+  @Public()
   findPublicBySlug(@Param('slug') slug: string) {
     return this.tenantsService.findPublicBranding(slug);
   }
@@ -49,14 +48,12 @@ export class TenantsController {
   }
 
   @Get('by-id/:id')
-  @UseGuards(JwtAuthGuard)
   @Roles('super_system_admin', 'church_admin')
   findById(@Param('id', ParseUUIDPipe) id: string) {
     return this.tenantsService.findById(id);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @Roles('super_system_admin', 'church_admin')
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -66,7 +63,6 @@ export class TenantsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @Roles('super_system_admin')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.tenantsService.remove(id);
