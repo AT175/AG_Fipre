@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { User, UserRole } from './user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 export interface AuthResponse {
   accessToken: string;
@@ -106,6 +107,41 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
     return this.buildTokens(user);
+  }
+
+  async updateUser(userId: string, dto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    if (dto.email && dto.email !== user.email) {
+      const existing = await this.userRepo.findOneBy({
+        email: dto.email.toLowerCase().trim(),
+      });
+      if (existing) {
+        throw new ConflictException('Email already in use');
+      }
+      user.email = dto.email.toLowerCase().trim();
+    }
+
+    if (dto.name) {
+      user.name = dto.name;
+    }
+
+    if (dto.password) {
+      user.passwordHash = await bcrypt.hash(dto.password, 12);
+    }
+
+    return await this.userRepo.save(user);
+  }
+
+  async getUsersByTenant(tenantId: string) {
+    return this.userRepo.find({
+      where: { tenantId, isActive: true },
+      select: ['id', 'email', 'name', 'role', 'tenantId', 'createdAt'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   private buildTokens(user: User): AuthResponse {
