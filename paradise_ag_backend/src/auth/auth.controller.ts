@@ -49,13 +49,13 @@ export class AuthController {
   }
 
   @Get('users/:tenantId')
-  @Roles('super_system_admin', 'church_admin')
+  @Roles('super_system_admin', 'church_admin', 'local_church_admin')
   async getUsersByTenant(@Param('tenantId', ParseUUIDPipe) tenantId: string) {
     return this.authService.getUsersByTenant(tenantId);
   }
 
   @Patch('users/:id')
-  @Roles('super_system_admin', 'church_admin')
+  @Roles('super_system_admin', 'church_admin', 'local_church_admin')
   async updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
