@@ -6,6 +6,7 @@ import { APP_GUARD, Reflector } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { TenantsModule } from './tenants/tenants.module';
 import { MembersModule } from './members/members.module';
+import { AttendanceModule } from './attendance/attendance.module';
 import { RolesGuard } from './auth/roles.guard';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
@@ -57,6 +58,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     AuthModule,
     TenantsModule,
     MembersModule,
+    AttendanceModule,
   ],
   providers: [
     {
