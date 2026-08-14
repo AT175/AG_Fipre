@@ -100,7 +100,7 @@ async function bootstrap() {
         name: isAdmin ? 'System Administrator' : `Admin ${church.name}`,
         email: isAdmin ? superAdminEmail : `admin@${church.slug}.local`,
         password: isAdmin ? superAdminPassword : churchAdminPassword,
-        role: isAdmin ? 'super_system_admin' : 'church_admin',
+        role: isAdmin ? 'super_system_admin' : 'local_church_admin',
         tenantId: tenant.id,
       });
 

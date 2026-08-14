@@ -32,17 +32,7 @@ export type UserRole =
   | 'cell_leader'
   | 'volunteer'
   | 'member'
-  | 'guest'
-  // Legacy roles
-  | 'super_admin'
-  | 'branch_admin'
-  | 'pastor'
-  | 'accountant'
-  | 'dept_leader'
-  | 'church_admin'
-  | 'secretary'
-  | 'treasurer'
-  | 'observer';
+  | 'guest';
 
 @Entity('users')
 export class User {

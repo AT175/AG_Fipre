@@ -92,16 +92,6 @@ export class AuthService {
       'volunteer',
       'member',
       'guest',
-      // Legacy roles
-      'super_admin',
-      'branch_admin',
-      'pastor',
-      'accountant',
-      'dept_leader',
-      'church_admin',
-      'secretary',
-      'treasurer',
-      'observer',
     ];
     if (!allowedRoles.includes(role)) {
       throw new BadRequestException('Invalid role');
