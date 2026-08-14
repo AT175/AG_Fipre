@@ -48,7 +48,7 @@ export class TenantsController {
   }
 
   @Get('by-id/:id')
-  @Roles('super_system_admin', 'church_admin')
+  @Public()
   findById(@Param('id', ParseUUIDPipe) id: string) {
     return this.tenantsService.findById(id);
   }
