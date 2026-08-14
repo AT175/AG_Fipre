@@ -4,6 +4,7 @@ import {
   ConflictException,
   BadRequestException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +15,7 @@ import { User, UserRole } from './user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthenticatedUser } from './jwt.strategy';
 
 export interface AuthResponse {
   accessToken: string;
@@ -104,6 +106,86 @@ export class AuthService {
       name: dto.name,
       role: role as UserRole,
       tenantId: dto.tenantId ?? null,
+      isActive: true,
+    });
+
+    try {
+      return await this.userRepo.save(user);
+    } catch (err) {
+      throw new InternalServerErrorException('Failed to create user');
+    }
+  }
+
+  /// Roles that a local_church_admin can assign when onboarding users.
+  /// These are tenant-scoped roles only — no above-church or system admin roles.
+  private readonly localChurchAdminAssignableRoles = [
+    'local_church_admin',
+    'senior_pastor',
+    'associate_pastor',
+    'church_secretary',
+    'finance_officer',
+    'ministry_head',
+    'youth_ministry_head',
+    'men_fellowship_head',
+    'women_fellowship_head',
+    'children_ministry_head',
+    'welfare_head',
+    'cell_leader',
+    'volunteer',
+    'member',
+    'guest',
+  ];
+
+  async onboardUser(caller: AuthenticatedUser, dto: RegisterDto): Promise<User> {
+    const existing = await this.userRepo.findOneBy({
+      email: dto.email.toLowerCase().trim(),
+    });
+    if (existing) {
+      throw new ConflictException('Email already registered');
+    }
+
+    const role = dto.role ?? 'member';
+
+    // super_system_admin can assign any role to any tenant
+    if (caller.role === 'super_system_admin') {
+      const allowedRoles = [
+        'super_system_admin',
+        'national_admin',
+        'national_executive',
+        'regional_admin',
+        'regional_bishop',
+        'district_admin',
+        'district_pastor',
+        'area_admin',
+        ...this.localChurchAdminAssignableRoles,
+      ];
+      if (!allowedRoles.includes(role)) {
+        throw new BadRequestException('Invalid role');
+      }
+    } else {
+      // local_church_admin (and other tenant admins) can only:
+      // 1. Assign tenant-scoped roles
+      // 2. Onboard to their own tenant
+      if (!this.localChurchAdminAssignableRoles.includes(role)) {
+        throw new ForbiddenException(
+          'You can only assign roles within your church',
+        );
+      }
+    }
+
+    // Force tenantId to the caller's tenant for non-super admins
+    const tenantId =
+      caller.role === 'super_system_admin'
+        ? (dto.tenantId ?? caller.tenantId)
+        : caller.tenantId;
+
+    const passwordHash = await bcrypt.hash(dto.password, 12);
+    const user = this.userRepo.create({
+      email: dto.email.toLowerCase().trim(),
+      passwordHash,
+      name: dto.name,
+      role: role as UserRole,
+      tenantId,
       isActive: true,
     });
 

@@ -30,9 +30,25 @@ export class AuthController {
   }
 
   @Post('register')
-  @Public()
+  @Roles('super_system_admin')
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      tenantId: user.tenantId,
+    };
+  }
+
+  @Post('onboard-user')
+  @Roles('super_system_admin', 'local_church_admin')
+  async onboardUser(
+    @CurrentUser() caller: AuthenticatedUser,
+    @Body() dto: RegisterDto,
+  ) {
+    const user = await this.authService.onboardUser(caller, dto);
     return {
       id: user.id,
       email: user.email,
