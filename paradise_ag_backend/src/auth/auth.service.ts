@@ -207,10 +207,15 @@ export class AuthService {
     return this.buildTokens(user);
   }
 
-  async updateUser(userId: string, dto: UpdateUserDto): Promise<User> {
+  async updateUser(caller: AuthenticatedUser, userId: string, dto: UpdateUserDto): Promise<User> {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) {
       throw new UnauthorizedException('User not found');
+    }
+
+    // local_church_admin can only update users in their own tenant
+    if (caller.role !== 'super_system_admin' && user.tenantId !== caller.tenantId) {
+      throw new ForbiddenException('You can only manage users in your own church');
     }
 
     if (dto.email && dto.email !== user.email) {

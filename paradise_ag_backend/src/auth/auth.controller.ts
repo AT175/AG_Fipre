@@ -8,6 +8,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService, AuthResponse } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -66,17 +67,24 @@ export class AuthController {
 
   @Get('users/:tenantId')
   @Roles('super_system_admin', 'local_church_admin')
-  async getUsersByTenant(@Param('tenantId', ParseUUIDPipe) tenantId: string) {
+  async getUsersByTenant(
+    @CurrentUser() caller: AuthenticatedUser,
+    @Param('tenantId', ParseUUIDPipe) tenantId: string,
+  ) {
+    if (caller.role !== 'super_system_admin' && caller.tenantId !== tenantId) {
+      throw new ForbiddenException('You can only view users in your own church');
+    }
     return this.authService.getUsersByTenant(tenantId);
   }
 
   @Patch('users/:id')
   @Roles('super_system_admin', 'local_church_admin')
   async updateUser(
+    @CurrentUser() caller: AuthenticatedUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
   ) {
-    const user = await this.authService.updateUser(id, dto);
+    const user = await this.authService.updateUser(caller, id, dto);
     return {
       id: user.id,
       email: user.email,
