@@ -26,11 +26,20 @@ export class AttendanceController {
   @Get()
   @Roles(
     'super_system_admin',
-    'church_admin',
-    'branch_admin',
-    'secretary',
-    'treasurer',
+    'national_admin',
+    'regional_admin',
+    'district_admin',
+    'area_admin',
+    'local_church_admin',
+    'senior_pastor',
+    'associate_pastor',
+    'church_secretary',
+    'ministry_head',
+    'cell_leader',
+    'finance_officer',
     'member',
+    'volunteer',
+    'guest',
   )
   findAll(
     @CurrentUser() user: AuthenticatedUser,
@@ -46,11 +55,20 @@ export class AttendanceController {
   @Get(':id')
   @Roles(
     'super_system_admin',
-    'church_admin',
-    'branch_admin',
-    'secretary',
-    'treasurer',
+    'national_admin',
+    'regional_admin',
+    'district_admin',
+    'area_admin',
+    'local_church_admin',
+    'senior_pastor',
+    'associate_pastor',
+    'church_secretary',
+    'ministry_head',
+    'cell_leader',
+    'finance_officer',
     'member',
+    'volunteer',
+    'guest',
   )
   findOne(
     @CurrentUser() user: AuthenticatedUser,
@@ -61,7 +79,7 @@ export class AttendanceController {
   }
 
   @Post()
-  @Roles('super_system_admin', 'church_admin', 'branch_admin', 'secretary')
+  @Roles('super_system_admin', 'national_admin', 'regional_admin', 'district_admin', 'area_admin', 'local_church_admin', 'senior_pastor', 'associate_pastor', 'church_secretary', 'ministry_head', 'cell_leader')
   create(
     @CurrentUser() user: AuthenticatedUser,
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
@@ -71,7 +89,7 @@ export class AttendanceController {
   }
 
   @Patch(':id')
-  @Roles('super_system_admin', 'church_admin', 'branch_admin', 'secretary')
+  @Roles('super_system_admin', 'national_admin', 'regional_admin', 'district_admin', 'area_admin', 'local_church_admin', 'senior_pastor', 'associate_pastor', 'church_secretary', 'ministry_head', 'cell_leader')
   update(
     @CurrentUser() user: AuthenticatedUser,
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
@@ -82,7 +100,7 @@ export class AttendanceController {
   }
 
   @Delete(':id')
-  @Roles('super_system_admin', 'church_admin', 'branch_admin')
+  @Roles('super_system_admin', 'national_admin', 'regional_admin', 'district_admin', 'area_admin', 'local_church_admin', 'church_secretary')
   remove(
     @CurrentUser() user: AuthenticatedUser,
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
@@ -93,7 +111,7 @@ export class AttendanceController {
 
   // Admin manually marks members present
   @Post(':id/mark-present')
-  @Roles('super_system_admin', 'church_admin', 'branch_admin', 'secretary')
+  @Roles('super_system_admin', 'national_admin', 'regional_admin', 'district_admin', 'area_admin', 'local_church_admin', 'senior_pastor', 'associate_pastor', 'church_secretary', 'ministry_head', 'cell_leader')
   markPresent(
     @CurrentUser() user: AuthenticatedUser,
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
@@ -105,7 +123,7 @@ export class AttendanceController {
 
   // Admin manually marks members absent
   @Post(':id/mark-absent')
-  @Roles('super_system_admin', 'church_admin', 'branch_admin', 'secretary')
+  @Roles('super_system_admin', 'national_admin', 'regional_admin', 'district_admin', 'area_admin', 'local_church_admin', 'senior_pastor', 'associate_pastor', 'church_secretary', 'ministry_head', 'cell_leader')
   markAbsent(
     @CurrentUser() user: AuthenticatedUser,
     @Param('tenantId', ParseUUIDPipe) tenantId: string,
@@ -117,7 +135,7 @@ export class AttendanceController {
 
   // Member self-check-in with GPS proximity validation
   @Post(':id/self-checkin')
-  @Roles('super_system_admin', 'church_admin', 'branch_admin', 'secretary', 'member')
+  @Roles('super_system_admin', 'national_admin', 'regional_admin', 'district_admin', 'area_admin', 'local_church_admin', 'senior_pastor', 'associate_pastor', 'church_secretary', 'ministry_head', 'cell_leader', 'member', 'volunteer', 'guest')
   selfCheckIn(
     @CurrentUser() user: AuthenticatedUser,
     @Param('tenantId', ParseUUIDPipe) tenantId: string,

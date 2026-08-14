@@ -54,7 +54,7 @@ export class TenantsController {
   }
 
   @Patch(':id')
-  @Roles('super_system_admin', 'church_admin')
+  @Roles('super_system_admin', 'local_church_admin')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTenantDto,
