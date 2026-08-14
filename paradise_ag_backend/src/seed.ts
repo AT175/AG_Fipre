@@ -6,11 +6,54 @@ import { TenantsService } from './tenants/tenants.service';
 /**
  * Seed script for first-time setup.
  * Usage: npx ts-node src/seed.ts
+ *
+ * Super admin credentials are read from environment variables:
+ *   SEED_SUPER_ADMIN_EMAIL
+ *   SEED_SUPER_ADMIN_PASSWORD
+ * Church admin credentials are read from:
+ *   SEED_CHURCH_ADMIN_PASSWORD
+ * If not provided, secure random defaults are generated and printed once.
  */
+function requireEnv(name: string, fallback?: string): string {
+  const value = process.env[name] ?? fallback;
+  if (!value) {
+    throw new Error(
+      `Missing required environment variable: ${name}. Set it before running the seed script.`,
+    );
+  }
+  return value;
+}
+
+function randomPassword(): string {
+  return `Ag${Math.random().toString(36).slice(-8)}!${Math.floor(
+    Math.random() * 100,
+  )}`;
+}
+
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const tenantsService = app.get(TenantsService);
   const authService = app.get(AuthService);
+
+  const superAdminEmail = requireEnv(
+    'SEED_SUPER_ADMIN_EMAIL',
+    'superadmin@paradiseag.org.gh',
+  );
+  const superAdminPassword =
+    process.env.SEED_SUPER_ADMIN_PASSWORD ?? randomPassword();
+  const churchAdminPassword =
+    process.env.SEED_CHURCH_ADMIN_PASSWORD ?? randomPassword();
+
+  if (!process.env.SEED_SUPER_ADMIN_PASSWORD) {
+    console.warn(
+      `SEED_SUPER_ADMIN_PASSWORD not set. Generated password: ${superAdminPassword}\nSave this now — it will not be shown again.`,
+    );
+  }
+  if (!process.env.SEED_CHURCH_ADMIN_PASSWORD) {
+    console.warn(
+      `SEED_CHURCH_ADMIN_PASSWORD not set. Generated password: ${churchAdminPassword}\nSave this now — it will not be shown again.`,
+    );
+  }
 
   const churches = [
     {
@@ -55,10 +98,8 @@ async function bootstrap() {
       const isAdmin = church.slug === 'paradise-ag-hq';
       const admin = await authService.register({
         name: isAdmin ? 'System Administrator' : `Admin ${church.name}`,
-        email: isAdmin
-          ? 'admin@paradiseag.local'
-          : `admin@${church.slug}.local`,
-        password: 'ChangeMe123!',
+        email: isAdmin ? superAdminEmail : `admin@${church.slug}.local`,
+        password: isAdmin ? superAdminPassword : churchAdminPassword,
         role: isAdmin ? 'super_system_admin' : 'church_admin',
         tenantId: tenant.id,
       });
