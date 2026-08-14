@@ -125,6 +125,6 @@ export class AttendanceController {
     @Body() dto: SelfCheckInDto,
   ) {
     // Use the authenticated user's id as the member id
-    return this.attendanceService.selfCheckIn(user, tenantId, id, user.id, dto);
+    return this.attendanceService.selfCheckIn(user, tenantId, id, user.userId, dto);
   }
 }
