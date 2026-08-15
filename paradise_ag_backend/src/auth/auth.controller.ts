@@ -55,6 +55,21 @@ export class AuthController {
     };
   }
 
+  @Post('reset-super-admin-password')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async resetSuperAdminPassword() {
+    const admin = await this.authService.findSuperAdmin();
+    if (!admin) {
+      return { message: 'No super admin found.', success: false };
+    }
+
+    const password = this.configService.get<string>('SEED_SUPER_ADMIN_PASSWORD', 'Admin123!');
+    await this.authService.updatePassword(admin.id, password);
+
+    return { message: 'Super admin password reset successfully.', success: true, email: admin.email };
+  }
+
   @Post('login')
   @Public()
   @HttpCode(HttpStatus.OK)

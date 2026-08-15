@@ -251,6 +251,15 @@ export class AuthService {
     return this.userRepo.findOneBy({ role: 'super_system_admin' as UserRole });
   }
 
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    user.passwordHash = await bcrypt.hash(newPassword, 12);
+    await this.userRepo.save(user);
+  }
+
   private buildTokens(user: User): AuthResponse {
     const payload = {
       sub: user.id,
