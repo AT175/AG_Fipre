@@ -18,10 +18,42 @@ import { CurrentUser } from './current-user.decorator';
 import { AuthenticatedUser } from './jwt.strategy';
 import { Public } from './public.decorator';
 import { Roles } from './roles.decorator';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  @Post('setup-super-admin')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  async setupSuperAdmin() {
+    // Check if any super_system_admin already exists
+    const existing = await this.authService.findSuperAdmin();
+    if (existing) {
+      return { message: 'Super admin already exists. Setup not allowed.', alreadySetup: true };
+    }
+
+    const email = this.configService.get<string>('SEED_SUPER_ADMIN_EMAIL', 'superadmin@paradiseag.org.gh');
+    const password = this.configService.get<string>('SEED_SUPER_ADMIN_PASSWORD', 'Admin123!');
+
+    const user = await this.authService.register({
+      name: 'System Administrator',
+      email,
+      password,
+      role: 'super_system_admin',
+      tenantId: undefined,
+    });
+
+    return {
+      message: 'Super admin created successfully',
+      alreadySetup: false,
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenantId },
+    };
+  }
 
   @Post('login')
   @Public()

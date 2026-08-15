@@ -247,6 +247,10 @@ export class AuthService {
     });
   }
 
+  async findSuperAdmin(): Promise<User | null> {
+    return this.userRepo.findOneBy({ role: 'super_system_admin' as UserRole });
+  }
+
   private buildTokens(user: User): AuthResponse {
     const payload = {
       sub: user.id,
