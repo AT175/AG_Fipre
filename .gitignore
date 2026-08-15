@@ -29,3 +29,7 @@ paradise_ag/flutter_01.log
 
 # Certs
 paradise_ag/certs/
+
+# Local source files for Library digital books (already hosted on Supabase
+# Storage — see paradise_ag/lib/services/library_seed_data.dart)
+/books/
