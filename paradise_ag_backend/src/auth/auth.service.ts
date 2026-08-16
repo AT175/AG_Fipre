@@ -99,6 +99,18 @@ export class AuthService {
       throw new BadRequestException('Invalid role');
     }
 
+    // ── One admin per tenant ──────────────────────────────────────────────
+    const tenantId = dto.tenantId ?? null;
+    if (tenantId && this.tenantAdminRoles.includes(role)) {
+      const existingAdmin = await this.findTenantAdmin(tenantId);
+      if (existingAdmin) {
+        throw new ConflictException(
+          `This church already has an admin (${existingAdmin.name} — ${existingAdmin.email}). ` +
+            `Demote or remove the existing admin before assigning a new one.`,
+        );
+      }
+    }
+
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const user = this.userRepo.create({
       email: dto.email.toLowerCase().trim(),
@@ -135,6 +147,22 @@ export class AuthService {
     'member',
     'guest',
   ];
+
+  /// Roles that count as "admin" for the one-admin-per-tenant rule.
+  /// Both the legacy 'church_admin' and the current 'local_church_admin'
+  /// are treated as tenant admin roles.
+  private readonly tenantAdminRoles = ['local_church_admin', 'church_admin'];
+
+  /// Checks if a tenant already has an admin. Returns the existing admin
+  /// or null. Used to enforce the one-admin-per-tenant rule.
+  private async findTenantAdmin(tenantId: string): Promise<User | null> {
+    return this.userRepo
+      .createQueryBuilder('u')
+      .where('u.tenant_id = :tenantId', { tenantId })
+      .andWhere('u.role IN (:...roles)', { roles: this.tenantAdminRoles })
+      .andWhere('u.is_active = true')
+      .getOne();
+  }
 
   async onboardUser(caller: AuthenticatedUser, dto: RegisterDto): Promise<User> {
     const existing = await this.userRepo.findOneBy({
@@ -178,6 +206,19 @@ export class AuthService {
       caller.role === 'super_system_admin'
         ? (dto.tenantId ?? caller.tenantId)
         : caller.tenantId;
+
+    // ── One admin per tenant ──────────────────────────────────────────────
+    // If the new user would be a tenant admin, check that the tenant
+    // doesn't already have one. This prevents duplicate admins.
+    if (tenantId && this.tenantAdminRoles.includes(role)) {
+      const existingAdmin = await this.findTenantAdmin(tenantId);
+      if (existingAdmin) {
+        throw new ConflictException(
+          `This church already has an admin (${existingAdmin.name} — ${existingAdmin.email}). ` +
+            `Demote or remove the existing admin before assigning a new one.`,
+        );
+      }
+    }
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const user = this.userRepo.create({
@@ -234,6 +275,58 @@ export class AuthService {
 
     if (dto.password) {
       user.passwordHash = await bcrypt.hash(dto.password, 12);
+    }
+
+    // Role change: enforce one-admin-per-tenant when promoting to admin
+    if (dto.role && dto.role !== user.role) {
+      const allowedRoles = [
+        'super_system_admin',
+        'national_admin',
+        'national_executive',
+        'regional_admin',
+        'regional_bishop',
+        'district_admin',
+        'district_pastor',
+        'area_admin',
+        'local_church_admin',
+        'senior_pastor',
+        'associate_pastor',
+        'church_secretary',
+        'finance_officer',
+        'ministry_head',
+        'youth_ministry_head',
+        'men_fellowship_head',
+        'women_fellowship_head',
+        'children_ministry_head',
+        'welfare_head',
+        'cell_leader',
+        'volunteer',
+        'member',
+        'guest',
+      ];
+      if (!allowedRoles.includes(dto.role)) {
+        throw new BadRequestException('Invalid role');
+      }
+      // If promoting TO admin, check no other admin exists
+      if (
+        user.tenantId &&
+        this.tenantAdminRoles.includes(dto.role) &&
+        !this.tenantAdminRoles.includes(user.role)
+      ) {
+        const existingAdmin = await this.findTenantAdmin(user.tenantId);
+        if (existingAdmin && existingAdmin.id !== userId) {
+          throw new ConflictException(
+            `This church already has an admin (${existingAdmin.name} — ${existingAdmin.email}). ` +
+              `Demote the existing admin first.`,
+          );
+        }
+      }
+      user.role = dto.role as UserRole;
+    }
+
+    // Active status toggle
+    if (dto.isActive !== undefined) {
+      user.isActive = dto.isActive === 'true' || dto.isActive === '1';
     }
 
     return await this.userRepo.save(user);
