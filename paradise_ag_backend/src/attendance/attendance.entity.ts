@@ -59,6 +59,10 @@ export class AttendanceRecord {
   @Column({ name: 'expires_at', type: 'timestamptz', nullable: true })
   expiresAt: Date | null;
 
+  // Target audience — controls which users see the session
+  @Column({ name: 'audience', type: 'varchar', length: 50, default: 'everyone' })
+  audience: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

@@ -80,6 +80,7 @@ export class AttendanceService {
       eventId: dto.eventId ?? null,
       eventTitle: dto.eventTitle ?? null,
       expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+      audience: dto.audience ?? 'everyone',
     });
     return this.repo.save(record);
   }

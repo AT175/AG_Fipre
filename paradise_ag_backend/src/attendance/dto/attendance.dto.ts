@@ -50,6 +50,10 @@ export class CreateAttendanceDto {
   @IsDateString()
   @IsOptional()
   expiresAt?: string;
+
+  @IsString()
+  @IsOptional()
+  audience?: string;
 }
 
 export class UpdateAttendanceDto {
