@@ -10,7 +10,7 @@
   publish = "build/web"
 
 [build.environment]
-  API_BASE_URL = "https://ag-bono1-1.onrender.com/api"
+  API_BASE_URL = "https://ag-fipre.onrender.com/api"
   SUPABASE_URL = "https://dbmbkevspcozcnhcsyii.supabase.co"
   SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWJrZXZzcGNvemNuaGNzeWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODczNTUsImV4cCI6MjA5OTM2MzM1NX0.7W2hZ0QIBYdpZ4tYh_wl7M3SpP9NzD7QWO90QHk5FDo"
 
@@ -47,11 +47,13 @@
     Pragma = "no-cache"
     Expires = "0"
 
-# Hashed static assets — safe to cache long-term since filenames change on rebuild
+# main.dart.js — Flutter doesn't hash this filename, so we can't cache long-term
 [[headers]]
   for = "/main.dart.js"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
 
 [[headers]]
   for = "/assets/*"
