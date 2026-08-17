@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS sunday_school_chapters (
   content TEXT,
   sunday_date DATE NOT NULL,
   discussion_post_id TEXT,
+  memory_verse_ref TEXT,
+  memory_verse_text TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
