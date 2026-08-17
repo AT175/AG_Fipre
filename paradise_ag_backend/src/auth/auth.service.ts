@@ -25,6 +25,8 @@ export interface AuthResponse {
     email: string;
     name: string;
     role: string;
+    roles?: string[];
+    activeRole?: string | null;
     tenantId: string | null;
   };
 }
@@ -117,6 +119,8 @@ export class AuthService {
       passwordHash,
       name: dto.name,
       role: role as UserRole,
+      roles: [role],
+      activeRole: role,
       tenantId: dto.tenantId ?? null,
       isActive: true,
     });
@@ -226,6 +230,8 @@ export class AuthService {
       passwordHash,
       name: dto.name,
       role: role as UserRole,
+      roles: [role],
+      activeRole: role,
       tenantId,
       isActive: true,
     });
@@ -322,6 +328,30 @@ export class AuthService {
         }
       }
       user.role = dto.role as UserRole;
+      // Keep roles array and activeRole in sync when role changes
+      if (!user.roles || user.roles.length === 0) {
+        user.roles = [dto.role];
+      }
+      if (!user.activeRole) {
+        user.activeRole = dto.role;
+      }
+    }
+
+    // Multi-role updates
+    if (dto.roles !== undefined) {
+      user.roles = dto.roles;
+      // If activeRole is not set or not in the new roles, set it to the first
+      if (dto.roles.length > 0 &&
+          (!user.activeRole || !dto.roles.includes(user.activeRole))) {
+        user.activeRole = dto.roles[0];
+      }
+    }
+
+    if (dto.activeRole !== undefined) {
+      // Only allow switching to a role that's in the roles array
+      if (user.roles && user.roles.includes(dto.activeRole)) {
+        user.activeRole = dto.activeRole;
+      }
     }
 
     // Active status toggle
@@ -335,7 +365,7 @@ export class AuthService {
   async getUsersByTenant(tenantId: string) {
     return this.userRepo.find({
       where: { tenantId, isActive: true },
-      select: ['id', 'email', 'name', 'role', 'tenantId', 'createdAt'],
+      select: ['id', 'email', 'name', 'role', 'roles', 'activeRole', 'tenantId', 'createdAt'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -377,6 +407,8 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
+        roles: user.roles,
+        activeRole: user.activeRole,
         tenantId: user.tenantId,
       },
     };

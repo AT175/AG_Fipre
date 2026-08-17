@@ -86,6 +86,8 @@ export class AuthController {
       email: user.email,
       name: user.name,
       role: user.role,
+      roles: user.roles,
+      activeRole: user.activeRole,
       tenantId: user.tenantId,
     };
   }
@@ -102,6 +104,8 @@ export class AuthController {
       email: user.email,
       name: user.name,
       role: user.role,
+      roles: user.roles,
+      activeRole: user.activeRole,
       tenantId: user.tenantId,
     };
   }
@@ -137,6 +141,8 @@ export class AuthController {
       email: user.email,
       name: user.name,
       role: user.role,
+      roles: user.roles,
+      activeRole: user.activeRole,
       tenantId: user.tenantId,
     };
   }

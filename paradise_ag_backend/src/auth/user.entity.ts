@@ -51,6 +51,17 @@ export class User {
   @Column({ type: 'varchar', length: 50 })
   role: UserRole;
 
+  /// Multi-role support: array of all roles assigned to the user.
+  /// Added by the access control migration as `text[]`. Kept in sync
+  /// with [role] (which serves as the legacy single-role field).
+  @Column({ type: 'text', array: true, default: [] })
+  roles: string[];
+
+  /// The currently active role — must be one of [roles].
+  /// Added by the access control migration.
+  @Column({ name: 'active_role', type: 'varchar', length: 50, nullable: true })
+  activeRole: string | null;
+
   @Column({ name: 'tenant_id', type: 'uuid', nullable: true })
   tenantId: string | null;
 
