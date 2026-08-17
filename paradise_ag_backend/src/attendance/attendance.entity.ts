@@ -48,6 +48,17 @@ export class AttendanceRecord {
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
+  // Event linking — optional reference to an event
+  @Column({ name: 'event_id', type: 'uuid', nullable: true })
+  eventId: string | null;
+
+  @Column({ name: 'event_title', type: 'varchar', length: 255, nullable: true })
+  eventTitle: string | null;
+
+  // Expiry — when the self-check-in window closes
+  @Column({ name: 'expires_at', type: 'timestamptz', nullable: true })
+  expiresAt: Date | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

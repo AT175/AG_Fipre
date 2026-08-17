@@ -38,6 +38,18 @@ export class CreateAttendanceDto {
   @Max(5000)
   @IsOptional()
   proximityRadius?: number;
+
+  @IsString()
+  @IsOptional()
+  eventId?: string;
+
+  @IsString()
+  @IsOptional()
+  eventTitle?: string;
+
+  @IsDateString()
+  @IsOptional()
+  expiresAt?: string;
 }
 
 export class UpdateAttendanceDto {

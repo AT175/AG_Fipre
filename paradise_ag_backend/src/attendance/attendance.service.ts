@@ -77,6 +77,9 @@ export class AttendanceService {
       longitude: dto.longitude ?? null,
       proximityRadius: dto.proximityRadius ?? 100,
       isActive: true,
+      eventId: dto.eventId ?? null,
+      eventTitle: dto.eventTitle ?? null,
+      expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
     });
     return this.repo.save(record);
   }
@@ -154,6 +157,11 @@ export class AttendanceService {
 
     if (!record.isActive) {
       throw new BadRequestException('Attendance session is closed');
+    }
+
+    // Check expiry — prevent late self-check-ins
+    if (record.expiresAt != null && new Date() > record.expiresAt) {
+      throw new BadRequestException('Attendance session has expired');
     }
 
     if (record.latitude == null || record.longitude == null) {
